@@ -15,4 +15,5 @@ This implementation should show how Fibonacci heaps work; it is not intended to 
 
 ## Sample output
 The test program should produce a heap that looks like this:
-![A diagram of a heap produced by this program][sample.png]
+
+![A diagram of a heap produced by this program](sample.png "Sample Fibonacci Heap")
