@@ -17,3 +17,5 @@ This implementation should show how Fibonacci heaps work; it is not intended to 
 The test program should produce a heap that looks like this:
 
 ![A diagram of a heap produced by this program](https://github.com/robinmessage/fibonacci/raw/master/sample.png "Sample Fibonacci Heap")
+
+Half-headed arrows are used for next and previous pointers. Full arrows are used for child and parent pointers. Filled arrowheads are used for next and child pointers; white arrowheads are for previous and parent pointers. Note that we synthesis child pointers to all the children of a node; in actuality, only one of these pointers is stored, since we can find sibling nodes. Marked nodes are grey and hoepfully the minimum is obvious.
