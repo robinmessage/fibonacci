@@ -25,10 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <stdio.h>
-#include "fibonacci.h"
+#include "fibonacci.hpp"
 
 using namespace std;
 
+//Add dotty output to our heap, which produces nice diagrams
 template <class V> class DotFibonacciHeap : public FibonacciHeap {
 public:
 	void dump() {
