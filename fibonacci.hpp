@@ -24,23 +24,33 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-template <class V> class FibonacciHeap {
-public:
-	struct node {
-	private:
-		node* prev;
-		node* next;
-		node* child;
-		node* parent;
-		V value;
-		int degree;
-		bool marked;
-	public:
-		friend class FibonacciHeap;
-	};
+template <class V> class FibonacciHeap;
 
+template <class V> struct node {
 private:
-	node* heap;
+	node<V>* prev;
+	node<V>* next;
+	node<V>* child;
+	node<V>* parent;
+	V value;
+	int degree;
+	bool marked;
+public:
+	friend class FibonacciHeap<V>;
+	node<V>* getPrev() {return prev;}
+	node<V>* getNext() {return next;}
+	node<V>* getChild() {return child;}
+	node<V>* getParent() {return parent;}
+	V getValue() {return value;}
+	bool isMarked() {return marked;}
+
+	bool hasChildren() {return child;}
+	bool hasParent() {return parent;}
+};
+
+template <class V> class FibonacciHeap {
+protected:
+	node<V>* heap;
 public:
 
 	FibonacciHeap() {
@@ -51,8 +61,8 @@ public:
 			_deleteAll(heap);
 		}
 	}
-	node* insert(V value) {
-		node* ret=_singleton(value);
+	node<V>* insert(V value) {
+		node<V>* ret=_singleton(value);
 		heap=_merge(heap,ret);
 		return ret;
 	}
@@ -70,27 +80,27 @@ public:
 	}
 
 	V removeMinimum() {
-		node* old=heap;
+		node<V>* old=heap;
 		heap=_removeMinimum(heap);
 		V ret=old->value;
 		delete old;
 		return ret;
 	}
 
-	void decreaseKey(node* n,V value) {
+	void decreaseKey(node<V>* n,V value) {
 		heap=_decreaseKey(heap,n,value);
 	}
 
-	node* find(V value) {
+	node<V>* find(V value) {
 		return _find(heap,value);
 	}
 private:
-	node* _empty() {
+	node<V>* _empty() {
 		return NULL;
 	}
 
-	node* _singleton(V value) {
-		node* n=new node;
+	node<V>* _singleton(V value) {
+		node<V>* n=new node<V>;
 		n->value=value;
 		n->prev=n->next=n;
 		n->degree=0;
@@ -100,16 +110,16 @@ private:
 		return n;
 	}
 
-	node* _merge(node* a,node* b) {
+	node<V>* _merge(node<V>* a,node<V>* b) {
 		if(a==NULL)return b;
 		if(b==NULL)return a;
 		if(a->value>b->value) {
-			node* temp=a;
+			node<V>* temp=a;
 			a=b;
 			b=temp;
 		}
-		node* an=a->next;
-		node* bp=b->prev;
+		node<V>* an=a->next;
+		node<V>* bp=b->prev;
 		a->next=b;
 		b->prev=a;
 		an->prev=bp;
@@ -117,11 +127,11 @@ private:
 		return a;
 	}
 
-	void _deleteAll(node* n) {
+	void _deleteAll(node<V>* n) {
 		if(n!=NULL) {
-			node* c=n;
+			node<V>* c=n;
 			do {
-				node* d=c;
+				node<V>* d=c;
 				c=c->next;
 				_deleteAll(d->child);
 				delete d;
@@ -129,16 +139,16 @@ private:
 		}
 	}
 	
-	void _addChild(node* parent,node* child) {
+	void _addChild(node<V>* parent,node<V>* child) {
 		child->prev=child->next=child;
 		child->parent=parent;
 		parent->degree++;
 		parent->child=_merge(parent->child,child);
 	}
 
-	void _unMarkAndUnParentAll(node* n) {
+	void _unMarkAndUnParentAll(node<V>* n) {
 		if(n==NULL)return;
-		node* c=n;
+		node<V>* c=n;
 		do {
 			c->marked=false;
 			c->parent=NULL;
@@ -146,7 +156,7 @@ private:
 		}while(c!=n);
 	}
 
-	node* _removeMinimum(node* n) {
+	node<V>* _removeMinimum(node<V>* n) {
 		_unMarkAndUnParentAll(n->child);
 		if(n->next==n) {
 			n=n->child;
@@ -156,11 +166,11 @@ private:
 			n=_merge(n->next,n->child);
 		}
 		if(n==NULL)return n;
-		node* trees[64]={NULL};
+		node<V>* trees[64]={NULL};
 		
 		while(true) {
 			if(trees[n->degree]!=NULL) {
-				node* t=trees[n->degree];
+				node<V>* t=trees[n->degree];
 				if(t==n)break;
 				trees[n->degree]=NULL;
 				if(n->value<t->value) {
@@ -189,7 +199,7 @@ private:
 			}
 			n=n->next;
 		}
-		node* min=n;
+		node<V>* min=n;
 		do {
 			if(n->value<min->value)min=n;
 			n=n->next;
@@ -197,7 +207,7 @@ private:
 		return min;
 	}
 
-	node* _cut(node* heap,node* n) {
+	node<V>* _cut(node<V>* heap,node<V>* n) {
 		if(n->next==n) {
 			n->parent->child=NULL;
 		} else {
@@ -210,12 +220,12 @@ private:
 		return _merge(heap,n);
 	}
 
-	node* _decreaseKey(node* heap,node* n,V value) {
+	node<V>* _decreaseKey(node<V>* heap,node<V>* n,V value) {
 		if(n->value<value)return heap;
 		n->value=value;
 		if(n->value<n->parent->value) {
 			heap=_cut(heap,n);
-			node* parent=n->parent;
+			node<V>* parent=n->parent;
 			n->parent=NULL;
 			while(parent!=NULL && parent->marked) {
 				heap=_cut(heap,parent);
@@ -228,12 +238,12 @@ private:
 		return heap;
 	}
 
-	node* _find(node* heap,V value) {
-		node* n=heap;
+	node<V>* _find(node<V>* heap,V value) {
+		node<V>* n=heap;
 		if(n==NULL)return NULL;
 		do {
 			if(n->value==value)return n;
-			node* ret=_find(n->child,value);
+			node<V>* ret=_find(n->child,value);
 			if(ret)return ret;
 			n=n->next;
 		}while(n!=heap);

@@ -27,10 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include "fibonacci.hpp"
 
-using namespace std;
-
 //Add dotty output to our heap, which produces nice diagrams
-template <class V> class DotFibonacciHeap : public FibonacciHeap {
+class DotFibonacciHeap : public FibonacciHeap<int> {
 public:
 	void dump() {
 		printf("digraph G {\n");
@@ -39,38 +37,38 @@ public:
 			return;
 		}
 		printf("minimum -> \"%p\" [constraint=false];\n",heap);
-		node* c=heap;
+		node<int>* c=heap;
 		do {
 			_dumpChildren(c);
-			c=c->next;
+			c=c->getNext();
 		} while(c!=heap);
 		printf("}\n");
 	}
 
 private:
 
-	void _dumpChildren(node* n) {
-		printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=lnormal];\n",n,n->next);
-		printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=ornormal];\n",n,n->prev);
-		if(n->marked)printf("\"%p\" [style=filled,fillcolor=grey];\n",n);
-		printf("\"%p\" [label=%d];\n",n,n->value);
-		if(n->child) {
-			node* c=n->child;
+	void _dumpChildren(node<int>* n) {
+		printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=lnormal];\n",n,n->getNext());
+		printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=ornormal];\n",n,n->getPrev());
+		if(n->isMarked())printf("\"%p\" [style=filled,fillcolor=grey];\n",n);
+		if(n->hasParent()) {
+			printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=onormal];\n",n,n->getParent());
+		}
+		printf("\"%p\" [label=%d];\n",n,n->getValue());
+		if(n->hasChildren()) {
+			node<int>* c=n->getChild();
 			do {
 				printf("\"%p\" -> \"%p\";\n",n,c);
 				_dumpChildren(c);
-				c=c->next;
-			} while(c!=n->child);
-		}
-		if(n->parent) {
-			printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=onormal];\n",n,n->parent);
+				c=c->getNext();
+			} while(c!=n->getChild());
 		}
 	}
 };
 
 
 void test() {
-	DotFibonacciHeap<int> h;
+	DotFibonacciHeap h;
 	h.insert(2);
 	h.insert(3);
 	h.insert(1);
@@ -81,7 +79,7 @@ void test() {
 	h.insert(7);
 	h.removeMinimum();
 	h.insert(2);
-	FibonacciHeap<int>::node* nine=h.insert(90);
+	node<int>* nine=h.insert(90);
 	h.removeMinimum();
 	h.removeMinimum();
 	h.removeMinimum();
