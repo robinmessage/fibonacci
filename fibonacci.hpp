@@ -221,17 +221,23 @@ private:
 	node<V>* _decreaseKey(node<V>* heap,node<V>* n,V value) {
 		if(n->value<value)return heap;
 		n->value=value;
-		if(n->value<n->parent->value) {
-			heap=_cut(heap,n);
-			node<V>* parent=n->parent;
-			n->parent=NULL;
-			while(parent!=NULL && parent->marked) {
-				heap=_cut(heap,parent);
-				n=parent;
-				parent=n->parent;
+		if(n->parent) {
+			if(n->value<n->parent->value) {
+				heap=_cut(heap,n);
+				node<V>* parent=n->parent;
 				n->parent=NULL;
+				while(parent!=NULL && parent->marked) {
+					heap=_cut(heap,parent);
+					n=parent;
+					parent=n->parent;
+					n->parent=NULL;
+				}
+				if(parent!=NULL && parent->parent!=NULL)parent->marked=true;
 			}
-			if(parent!=NULL && parent->parent!=NULL)parent->marked=true;
+		} else {
+			if(n->value < heap->value) {
+				heap = n;
+			}
 		}
 		return heap;
 	}
