@@ -197,10 +197,11 @@ private:
 			n=n->next;
 		}
 		node<V>* min=n;
+		node<V>* start=n;
 		do {
 			if(n->value<min->value)min=n;
 			n=n->next;
-		} while(n!=n);
+		} while(n!=start);
 		return min;
 	}
 
