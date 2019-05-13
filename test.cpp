@@ -22,7 +22,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <stdio.h>
-#include "fibonacci.hpp"
+#include "fibonacci.hpp" //Library of functions required for code operation
 
 //Add dotty output to our heap, which produces nice diagrams
 class DotFibonacciHeap : public FibonacciHeap<int> {
@@ -34,6 +34,7 @@ public:
 			return;
 		}
 		printf("minimum -> \"%p\" [constraint=false];\n",heap);
+		
 		node<int>* c=heap;
 		do {
 			_dumpChildren(c);
@@ -47,11 +48,13 @@ private:
 	void _dumpChildren(node<int>* n) {
 		printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=lnormal];\n",n,n->getNext());
 		printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=ornormal];\n",n,n->getPrev());
+		
 		if(n->isMarked())printf("\"%p\" [style=filled,fillcolor=grey];\n",n);
 		if(n->hasParent()) {
 			printf("\"%p\" -> \"%p\" [constraint=false,arrowhead=onormal];\n",n,n->getParent());
 		}
 		printf("\"%p\" [label=%d];\n",n,n->getValue());
+		
 		if(n->hasChildren()) {
 			node<int>* c=n->getChild();
 			do {
