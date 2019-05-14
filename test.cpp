@@ -61,9 +61,7 @@ private:
 			} while(c!=n->getChild());
 		}
 	}
-};
-
-
+}; //BOŞLUK SİLİNDİ
 void test() {
 	DotFibonacciHeap h;
 	h.insert(2);
